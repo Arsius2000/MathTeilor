@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Лекция 11: Ряды Фурье для радиотехников | РТУ МИРЭА</title>
+    <!-- KaTeX CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}] });"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, sans-serif; background: #f5f7fb; color: #1e2a3a; line-height: 1.5; }
+        :root { --mirrea-primary: #355CA8; --mirrea-accent1: #5FC1CF; --mirrea-accent2: #A7D916; --mirrea-light: #E6E6E6; --mirrea-white: #ffffff; --mirrea-gray: #6c757d; }
+        .header { background: var(--mirrea-white); border-bottom: 3px solid var(--mirrea-primary); padding: 0.75rem 2rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+        .logo-area { display: flex; align-items: center; gap: 0.8rem; }
+        .logo-img { width: 70px; height: 55px; object-fit: contain; background: white; border-radius: 8px; }
+        .dept-info h2 { font-size: 1.1rem; color: var(--mirrea-primary); font-weight: 600; }
+        .dept-info p { font-size: 0.8rem; color: var(--mirrea-gray); }
+        .lec-title { margin-left: auto; font-size: 0.9rem; font-weight: 500; background: var(--mirrea-light); padding: 0.4rem 1rem; border-radius: 40px; color: var(--mirrea-primary); }
+        .slider-container { max-width: 1300px; margin: 1.8rem auto; padding: 0 1.5rem; }
+        .slide-card { background: var(--mirrea-white); border-radius: 28px; box-shadow: 0 12px 28px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
+        .slide-content { padding: 2rem 2.2rem; min-height: 60vh; max-height: 70vh; overflow-y: auto; }
+        .slide-content::-webkit-scrollbar { width: 6px; }
+        .slide-content::-webkit-scrollbar-track { background: var(--mirrea-light); border-radius: 10px; }
+        .slide-content::-webkit-scrollbar-thumb { background: var(--mirrea-accent1); border-radius: 10px; }
+        .katex { font-size: 1.05em; }
+        .katex-display { margin: 1.2rem 0; overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+        .theorem { background: #eef3fc; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-accent1); }
+        .definition { background: #f0f9f0; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-accent2); }
+        .example { background: #fff7e8; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; }
+        .engineering { background: #e8f0fe; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-primary); }
+        .engineering strong { color: var(--mirrea-primary); }
+        h3 { color: var(--mirrea-primary); margin: 1.2rem 0 0.6rem 0; font-size: 1.4rem; }
+        h4 { color: #2c5282; margin: 0.8rem 0 0.4rem; }
+        p { margin-bottom: 0.7rem; }
+        ul, ol { margin-left: 1.4rem; margin-bottom: 0.8rem; }
+        hr { margin: 1rem 0; border: 0; height: 1px; background: linear-gradient(90deg, var(--mirrea-light), transparent); }
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem 1.8rem; background: var(--mirrea-white); border-top: 1px solid rgba(0,0,0,0.05); flex-wrap: wrap; gap: 0.8rem; }
+        .nav-btn { background: var(--mirrea-primary); color: white; border: none; padding: 0.6rem 1.4rem; font-size: 1rem; border-radius: 60px; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .nav-btn:hover { background: #2c4a8c; transform: translateY(-1px); }
+        .page-indicator { font-size: 0.9rem; background: var(--mirrea-light); padding: 0.4rem 1rem; border-radius: 40px; font-weight: 500; color: var(--mirrea-primary); }
+        @media (max-width: 700px) { .slide-content { padding: 1.2rem; } .header { padding: 0.8rem 1rem; } .lec-title { font-size: 0.7rem; } .nav-btn { padding: 0.5rem 1rem; font-size: 0.85rem; } }
+        footer { text-align: center; font-size: 0.7rem; color: #aaa; padding: 1rem; }
+        
+        /* Стили для интерактивного слайда (синтез сигнала) */
+        .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin: 0.5rem 0 1rem; }
+        select, input { padding: 0.5rem 1rem; border-radius: 40px; border: 1px solid #cad2df; background: white; font-weight: 500; }
+        button { background: var(--mirrea-accent1); border: none; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: bold; cursor: pointer; transition: 0.15s; color: #1e2a3a; }
+        button:hover { background: #48abb9; transform: scale(0.97); }
+        canvas { display: block; width: 100%; background: #ffffff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin: 0.8rem 0; }
+        .signal-canvas { height: 260px; width: 100%; }
+        .spectrum-canvas { height: 200px; width: 100%; }
+        .info-note { background: #eef3fc; border-radius: 18px; padding: 0.8rem 1.2rem; font-size: 0.85rem; margin-top: 1rem; }
+        .tooltip-spectrum { font-size: 0.75rem; color: #4f6f8f; margin-top: 0.3rem; }
+        .gibbs-label { background: #fff0e0; border-left: 4px solid var(--mirrea-accent2); padding: 0.5rem 1rem; border-radius: 14px; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-area">
+        <img src="logo.jpg" alt="РТУ МИРЭА логотип" class="logo-img" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'70\' height=\'55\' viewBox=\'0 0 70 55\'%3E%3Crect width=\'70\' height=\'55\' fill=\'%23355CA8\'/%3E%3Ctext x=\'6\' y=\'32\' fill=\'white\' font-size=\'11\' font-weight=\'bold\'%3EМИРЭА%3C/text%3E%3C/svg%3E';">
+        <div class="dept-info">
+            <h2>РТУ МИРЭА</h2>
+            <p>Кафедра "Высшая математика-3" (ВМ-3)</p>
+        </div>
+    </div>
+    <div class="lec-title">📡 Радиотехника • Математический анализ • Лекция 11</div>
+</div>
+
+<div class="slider-container">
+    <div class="slide-card">
+        <div class="slide-content" id="slide-content"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevSlideBtn">◀ Назад</button>
+            <span class="page-indicator" id="pageIndicator">Слайд 1 / 12</span>
+            <button class="nav-btn" id="nextSlideBtn">Вперёд ▶</button>
+        </div>
+    </div>
+</div>
+<footer>© Кафедра ВМ-3, РТУ МИРЭА · Ряды Фурье: от математики к анализу сигналов</footer>
+
+<script>
+    // ==============================================================
+    // РАСШИРЕННАЯ ЛЕКЦИЯ: добавлен первый слайд с названием,
+    // пункт "11.6. Разложение на полупериоде" перенесен в заголовок слайда с примером
+    // ==============================================================
+    
+    // ----- Вспомогательные функции для интерактивного слайда (синтез сигнала) -----
+    function getCoeff(type, n) {
+        if(type === 'meander') {
+            if(n===0) return {a0:0};
+            let bn = (1 - Math.pow(-1, n)) * (2/(Math.PI * n));
+            return {a:0, b:bn};
+        }
+        else if(type === 'sawtooth') {
+            if(n===0) return {a0:0};
+            let bn = 2 * Math.pow(-1, n+1) / (Math.PI * n);
+            return {a:0, b:bn};
+        }
+        else if(type === 'triangle') {
+            if(n===0) return {a0:0.5};
+            if(n%2===0) return {a:0, b:0};
+            let an = 4/(Math.PI*Math.PI*n*n);
+            return {a:an, b:0};
+        }
+        else if(type === 'sine') {
+            if(n===0) return {a0:0};
+            if(n===1) return {a:0, b:1};
+            return {a:0,b:0};
+        }
+        return {a:0,b:0};
+    }
+
+    function fourierSum(x, type, Nmax) {
+        let sum = 0;
+        let a0term = 0;
+        if(type === 'triangle') a0term = 0.5;
+        sum = a0term;
+        for(let n=1; n<=Nmax; n++) {
+            let c = getCoeff(type, n);
+            let an = c.a || 0;
+            let bn = c.b || 0;
+            sum += an * Math.cos(n * x) + bn * Math.sin(n * x);
+        }
+        return sum;
+    }
+
+    function originalSignal(x, type) {
+        if(type === 'meander') return x >= 0 ? 1 : -1;
+        if(type === 'sawtooth') return x / Math.PI;
+        if(type === 'triangle') {
+            let t = Math.abs(x);
+            return 1 - (2*t)/Math.PI;
+        }
+        if(type === 'sine') return Math.sin(x);
+        return 0;
+    }
+
+    let interactiveInitialized = false;
+    let currentInteractiveType = 'meander';
+    let interactiveNHarm = 13;
+    let signalCanvas = null, spectrumCanvas = null;
+    let ctxSig = null, ctxSpec = null;
+    
+    function initInteractive() {
+        signalCanvas = document.getElementById('signalCanvas');
+        spectrumCanvas = document.getElementById('spectrumCanvas');
+        if(!signalCanvas || !spectrumCanvas) return;
+        ctxSig = signalCanvas.getContext('2d');
+        ctxSpec = spectrumCanvas.getContext('2d');
+        
+        // Настройка обработчиков
+        const typeSelect = document.getElementById('signalType');
+        const slider = document.getElementById('nHarmonics');
+        const nDisplay = document.getElementById('nValueDisplay');
+        const explainBtn = document.getElementById('explainGibbsBtn');
+        const spectrumMsg = document.getElementById('spectrumTooltipMsg');
+        
+        if(typeSelect) typeSelect.addEventListener('change', (e) => { currentInteractiveType = e.target.value; drawAllInteractive(); });
+        if(slider) slider.addEventListener('input', (e) => { interactiveNHarm = parseInt(e.target.value); if(nDisplay) nDisplay.innerText = interactiveNHarm; drawAllInteractive(); });
+        if(explainBtn) explainBtn.addEventListener('click', () => alert("🔔 Эффект Гиббса: при усечении ряда Фурье (ограничении полосы) вблизи разрыва возникает выброс ≈9% от скачка. Это связано с частичной суммой, стремящейся к интегральному синусу. В радиотехнике — искажения фронтов импульсов."));
+        
+        if(spectrumCanvas) {
+            spectrumCanvas.addEventListener('mousemove', (e) => {
+                if(!spectrumCanvas.ampsData || !spectrumMsg) return;
+                const rect = spectrumCanvas.getBoundingClientRect();
+                const scaleX = spectrumCanvas.width / rect.width;
+                const mx = (e.clientX - rect.left) * scaleX;
+                const w = spectrumCanvas.width;
+                const maxHarm = 20;
+                const barWidth = w/(maxHarm+1);
+                for(let i=0; i<maxHarm; i++) {
+                    let xc = barWidth*(i+0.5) - barWidth*0.35;
+                    let wid = barWidth*0.6;
+                    if(mx>=xc && mx<=xc+wid && spectrumCanvas.ampsData) {
+                        let ampVal = spectrumCanvas.ampsData[i] || 0;
+                        let rel = (ampVal/spectrumCanvas.maxAmp).toFixed(2);
+                        spectrumMsg.innerHTML = `🎵 Гармоника №${i+1} | амплитуда = ${ampVal.toFixed(4)} | относительная: ${rel}`;
+                        return;
+                    }
+                }
+                spectrumMsg.innerHTML = '🖱️ Наведите на столбец — частота и амплитуда гармоники';
+            });
+        }
+        
+        function resizeCanvases() {
+            if(!signalCanvas || !spectrumCanvas) return;
+            const w = Math.min(1000, document.querySelector('.slide-card')?.clientWidth-80 || 800);
+            signalCanvas.width = w;
+            signalCanvas.height = 260;
+            spectrumCanvas.width = w;
+            spectrumCanvas.height = 200;
+            drawAllInteractive();
+        }
+        
+        function drawSignalInteractive() {
+            if(!ctxSig || !signalCanvas) return;
+            const w = signalCanvas.width;
+            const h = signalCanvas.height;
+            ctxSig.clearRect(0,0,w,h);
+            ctxSig.save();
+            ctxSig.strokeStyle = '#b9c3d0';
+            ctxSig.beginPath();
+            ctxSig.moveTo(0, h/2);
+            ctxSig.lineTo(w, h/2);
+            ctxSig.stroke();
+            const yScale = h/2.2;
+            // идеальный сигнал пунктир
+            ctxSig.beginPath();
+            ctxSig.setLineDash([7,5]);
+            ctxSig.strokeStyle = '#8f9bb5';
+            ctxSig.lineWidth = 1.8;
+            let first = true;
+            for(let px=0; px<=w; px+=3) {
+                let xVal = (px / w) * 2*Math.PI - Math.PI;
+                let orig = originalSignal(xVal, currentInteractiveType);
+                let y = h/2 - orig*yScale;
+                if(first) { ctxSig.moveTo(px, y); first=false; }
+                else ctxSig.lineTo(px, y);
+            }
+            ctxSig.stroke();
+            ctxSig.setLineDash([]);
+            // сумма Фурье
+            ctxSig.beginPath();
+            ctxSig.strokeStyle = '#355CA8';
+            ctxSig.lineWidth = 2.4;
+            first = true;
+            for(let px=0; px<=w; px+=2) {
+                let xVal = (px / w) * 2*Math.PI - Math.PI;
+                let sumVal = fourierSum(xVal, currentInteractiveType, interactiveNHarm);
+                let y = h/2 - sumVal*yScale;
+                if(first) { ctxSig.moveTo(px, y); first=false; }
+                else ctxSig.lineTo(px, y);
+            }
+            ctxSig.stroke();
+            if(currentInteractiveType === 'meander' && interactiveNHarm < 35) {
+                ctxSig.fillStyle = '#e67e22';
+                ctxSig.font = "bold 10px 'Segoe UI'";
+                ctxSig.fillText("⚠️ Выброс Гиббса ~9%", 20, 45);
+            }
+            ctxSig.restore();
+        }
+        
+        function drawSpectrumInteractive() {
+            if(!ctxSpec || !spectrumCanvas) return;
+            const w = spectrumCanvas.width;
+            const h = spectrumCanvas.height;
+            ctxSpec.clearRect(0,0,w,h);
+            const maxHarm = 20;
+            let amps = [];
+            let maxAmp = 0;
+            for(let n=1; n<=maxHarm; n++) {
+                let c = getCoeff(currentInteractiveType, n);
+                let amp = Math.sqrt((c.a||0)*(c.a||0)+(c.b||0)*(c.b||0));
+                amps.push(amp);
+                if(amp>maxAmp) maxAmp = amp;
+            }
+            if(maxAmp===0) maxAmp=1;
+            const barWidth = w/(maxHarm+1);
+            for(let i=0; i<amps.length; i++) {
+                let n = i+1;
+                let heightNorm = amps[i]/maxAmp;
+                let barH = Math.max(3, heightNorm*(h-50));
+                let x = barWidth*(i+0.5) - barWidth*0.35;
+                ctxSpec.fillStyle = '#5FC1CF';
+                ctxSpec.fillRect(x, h-25-barH, barWidth*0.6, barH);
+                ctxSpec.fillStyle = '#2c3e66';
+                ctxSpec.font = "9px monospace";
+                ctxSpec.fillText(`${n}`, x+4, h-12);
+            }
+            ctxSpec.fillStyle = '#2a4d6e';
+            ctxSpec.font = "bold 11px 'Segoe UI'";
+            ctxSpec.fillText("Амплитудный спектр |Cₙ|", 12, 22);
+            spectrumCanvas.ampsData = amps;
+            spectrumCanvas.maxAmp = maxAmp;
+        }
+        
+        function drawAllInteractive() {
+            if(ctxSig && signalCanvas) drawSignalInteractive();
+            if(ctxSpec && spectrumCanvas) drawSpectrumInteractive();
+        }
+        
+        window.addEventListener('resize', () => resizeCanvases());
+        setTimeout(() => { resizeCanvases(); drawAllInteractive(); }, 100);
+        resizeCanvases();
+        interactiveInitialized = true;
+    }
+    
+    // ----- Все слайды лекции (12 слайдов) -----
+    const slides = [
+        // --- Слайд 0: НАЗВАНИЕ ЛЕКЦИИ ---
+        `<div style="display: flex; flex-direction: column; justify-content: center; min-height: 50vh; text-align: center;">
+            <h1 style="font-size: 2.4rem; color: var(--mirrea-primary); margin-bottom: 1rem;">📐 Ряды Фурье</h1>
+            <h2 style="font-size: 1.6rem; color: #2c5282; margin-bottom: 1rem;">Лекция №11</h2>
+            <div style="font-size: 1.2rem; color: #4a627a; margin: 1rem 0;">Тригонометрический ряд Фурье, сходимость, спектры, энергия сигнала</div>
+            <div style="margin-top: 2rem; font-size: 1rem; color: var(--mirrea-gray);">РТУ МИРЭА · Кафедра высшей математики - 3 (ВМ-3)</div>
+            <div style="margin-top: 0.5rem; font-size: 0.9rem;">Математический анализ — семестр 3</div>
+        </div>`,
+        
+        // --- Слайд 1: Прикладная задача ---
+        `<div>
+            <h3>📡 Прикладная задача: Анализ сигнала</h3>
+            <div class="engineering">
+                <strong>🔧 Задача из радиотехники:</strong><br>
+                Представьте, что на вход радиотехнического устройства поступает периодический сигнал сложной формы – например, идеальные прямоугольные импульсы (меандр) с амплитудой 5 В и частотой 1 кГц. После прохождения через нелинейный элемент форма сигнала исказилась.
+                <br><br>
+                <strong>Вопросы:</strong>
+                <ul>
+                    <li>Какие гармонические составляющие (частоты) присутствуют в исходном сигнале?</li>
+                    <li>Как изменился его частотный спектр после искажения?</li>
+                    <li>Можно ли восстановить исходную форму, отфильтровав лишние гармоники?</li>
+                </ul>
+                <strong>Ключевая идея:</strong> Любой периодический сигнал можно разложить на сумму простых гармоник (синусоид). Это и есть <strong>ряд Фурье</strong>. Сегодня мы изучим математический аппарат, который позволяет найти спектр любого сигнала.
+            </div>
+            <p>Далее мы познакомимся с математической теорией рядов Фурье, а затем вернёмся к этой задаче и увидим, как спектральный анализ помогает радиотехникам.</p>
+        </div>`,
+        
+        // --- Слайд 2: ИНТЕРАКТИВНЫЙ СЛАЙД (синтез сигнала и спектр) ---
+        `<div>
+            <h3>🎛️ Синтез сигнала и амплитудный спектр (АЧХ) — интерактив</h3>
+            <div class="controls">
+                <label>Тип сигнала:</label>
+                <select id="signalType">
+                    <option value="meander">📶 Меандр (прямоугольный, скв.2)</option>
+                    <option value="sawtooth">🔺 Пилообразный</option>
+                    <option value="triangle">📐 Треугольный</option>
+                    <option value="sine">🎵 Чистый синус</option>
+                </select>
+                <label>Число гармоник N:</label>
+                <input type="range" id="nHarmonics" min="1" max="51" step="1" value="13">
+                <span id="nValueDisplay">13</span>
+                <button id="explainGibbsBtn">⚠️ Объяснить эффект Гиббса</button>
+            </div>
+            <canvas id="signalCanvas" class="signal-canvas" width="900" height="260" style="width:100%; height:auto; background:#fff"></canvas>
+            <div class="tooltip-spectrum">📉 Серая пунктирная линия — идеальный сигнал. Цветная — сумма ряда Фурье (N гармоник). Выброс ~9% у меандра — эффект Гиббса.</div>
+            <canvas id="spectrumCanvas" class="spectrum-canvas" width="900" height="200" style="width:100%; height:auto; background:#fff"></canvas>
+            <div id="spectrumTooltipMsg" class="info-note" style="margin-top: 0.5rem;">🖱️ Наведите курсор на столбцы спектра — частота (номер гармоники) и амплитуда.</div>
+            <div class="gibbs-label">
+                💡 <strong>Практический вывод:</strong> для точной передачи прямоугольных импульсов нужна широкая полоса пропускания — чем выше скважность, тем больше гармоник требуется.
+            </div>
+            <p>Наблюдайте, как увеличение числа гармоник приближает синтезированный сигнал к идеальной форме, и как спектр показывает амплитуды отдельных частотных составляющих.</p>
+        </div>`,
+        
+        // --- Слайд 3: Математическое введение ---
+        `<div>
+            <h3>📈 11. Тригонометрический ряд Фурье</h3>
+            <p>При решении многих технических задач приходится иметь дело с периодическими процессами, для описания которых требуются периодические функции. Простейшей периодической функции периода \\(2\\pi\\) является функция \\(\\sin(x + \\alpha)\\). При сложении периодических функций</p>
+            $$\\begin{cases} \\sin(x + \\alpha_1), \\quad T = 2\\pi \\\\ \\sin(2x + \\alpha_2), \\quad T = \\frac{2\\pi}{2} \\\\ \\vdots \\\\ \\sin(nx + \\alpha_n), \\quad T = \\frac{2\\pi}{n} \\end{cases}$$
+            <p>получим периодическую функцию с периодом \\(2\\pi\\).</p>
+            <p>Естественно возникает обратный вопрос: можно ли заданную периодическую функцию \\(f(x)\\) с периодом \\(2\\pi\\) представить в виде суммы конечного или бесконечного числа простейших периодических функций вида \\(\\sin(nx + \\alpha_n)\\):</p>
+            $$ f(x) = A_0 + \\sum_{n=1}^\\infty A_n \\sin(nx + \\alpha_n)? $$
+            <p>Постоянное слагаемое \\(A_0\\) можно считать периодической функцией с любым периодом, в том числе и с периодом \\(2\\pi\\).</p>
+            <p>В механике функция \\(\\sin(nx+\\alpha_n)\\) описывает гармоническое колебание. Пользуясь тождеством \\(\\sin(nx+\\alpha_n)=\\sin\\alpha_n\\cos nx+\\cos\\alpha_n\\sin nx\\), обозначая \\(A_n\\sin\\alpha_n=a_n,\\; A_n\\cos\\alpha_n=b_n\\), получим:</p>
+            $$ f(x) = A_0 + \\sum_{n=1}^{\\infty} (a_n \\cos nx + b_n \\sin nx) \\qquad (1) $$
+            <div class="definition">
+                <strong>Определение (основная тригонометрическая система):</strong> Система функций \\(1, \\cos x, \\sin x, \\cos 2x, \\sin 2x, \\ldots, \\cos nx, \\sin nx, \\ldots\\) ортогональна на \\([-\\pi,\\pi]\\).
+            </div>
+            <p><strong>Коэффициенты Фурье</strong> (интегрирование ряда):</p>
+            $$ \\int_{-\\pi}^{\\pi} f(x) dx = A_0 \\cdot 2\\pi \\quad\\Rightarrow\\quad A_0 = \\frac{1}{2\\pi}\\int_{-\\pi}^{\\pi} f(x) dx. $$
+            <p>Умножая на \\(\\cos kx\\) и \\(\\sin kx\\) и используя ортогональность, получаем (\\(n\\ge 1\\)):</p>
+            $$ a_n = \\frac{1}{\\pi}\\int_{-\\pi}^{\\pi}f(x)\\cos nx\\,dx,\\qquad b_n = \\frac{1}{\\pi}\\int_{-\\pi}^{\\pi}f(x)\\sin nx\\,dx. $$
+            <p>Вводя \\(a_0 = \\frac{1}{\\pi}\\int_{-\\pi}^{\\pi}f(x)dx\\), записываем <strong>тригонометрический ряд Фурье</strong>:</p>
+            $$ f(x) \\to \\frac{a_0}{2} + \\sum_{n=1}^{\\infty} (a_n \\cos nx + b_n \\sin nx). $$
+        </div>`,
+        
+        // --- Слайд 4: Прикладной смысл: От сигнала к спектру ---
+        `<div>
+            <h3>📡 Прикладной смысл: От сигнала к спектру</h3>
+            <div class="engineering">
+                <strong>⚡ Интерпретация в радиотехнике:</strong><br>
+                Коэффициенты Фурье \\(a_n\\) и \\(b_n\\) имеют прямой физический смысл. Если сигнал \\(f(t)\\) имеет период \\(T = 2l\\), то:
+                <ul>
+                    <li><strong>\\(a_n, b_n\\)</strong> — амплитуды косинусной и синусной составляющих на частоте \\(\\omega_n = \\frac{\\pi n}{l} = n\\omega_0\\), где \\(\\omega_0\\) — основная круговая частота.</li>
+                    <li><strong>Амплитуда n-й гармоники:</strong> \\(A_n = \\sqrt{a_n^2 + b_n^2}\\).</li>
+                    <li><strong>Начальная фаза:</strong> \\(\\varphi_n = \\arctg(-b_n/a_n)\\).</li>
+                </ul>
+                <strong>Спектральная диаграмма</strong> — это график, где по оси абсцисс отложены частоты \\(\\omega_n\\), а по оси ординат — амплитуды \\(A_n\\) или фазы \\(\\varphi_n\\). Она полностью характеризует частотный состав сигнала.
+            </div>
+            <p>Таким образом, мы получаем мощный инструмент: вместо временной функции \\(f(t)\\) можем изучать её спектр — набор гармоник, из которых сигнал состоит. Это основа спектрального анализа, фильтрации, модуляции и многих других радиотехнических методов.</p>
+        </div>`,
+        
+        // --- Слайд 5: Сходимость ряда Фурье. Теорема Дирихле ---
+        `<div>
+            <h3>📌 11.2. Сходимость ряда Фурье. Теорема Дирихле</h3>
+            <p>Пусть функция \\(f(x)\\) кусочно-дифференцируема на \\([-\\pi,\\pi]\\). Тогда её ряд Фурье сходится в каждой точке отрезка, и сумма \\(S(x)\\) удовлетворяет:</p>
+            <div class="theorem">
+                <strong>Теорема Дирихле.</strong><br>
+                1) \\(S(x_0)=f(x_0)\\) во всех точках непрерывности \\(f\\) на \\((-\\pi,\\pi)\\).<br>
+                2) \\(S(x_0)=\\frac12\\bigl(f(x_0-0)+f(x_0+0)\\bigr)\\) в точках разрыва первого рода.<br>
+                3) \\(S(\\pi)=S(-\\pi)=\\frac12\\bigl(f(-\\pi+0)+f(\\pi-0)\\bigr)\\).
+            </div>
+            <p>Замечание: теорема сохраняется для периодических с периодом \\(2\\pi\\) функций на всей оси.</p>
+            <div class="example">
+                <strong>Пример 1.</strong> Разложить в ряд Фурье \\(f(x)=\\begin{cases}\\pi, & -\\pi\\le x<0\\\\ \\pi-x, & 0\\le x<\\pi\\end{cases}\\).<br>
+                Вычисляя коэффициенты (интегрирование по частям), получаем:<br>
+                $$ a_0 = \\frac{3\\pi}{2},\\quad a_n = \\frac{1-(-1)^n}{\\pi n^2},\\quad b_n = \\frac{(-1)^n}{n}. $$
+                Ряд Фурье:
+                $$ f(x) \\to \\frac{3\\pi}{4} + \\frac{2}{\\pi}\\sum_{k=0}^{\\infty}\\frac{\\cos(2k+1)x}{(2k+1)^2} - \\sum_{n=1}^{\\infty}\\frac{(-1)^{n}}{n}\\sin nx. $$
+                По теореме Дирихле для всех \\(x\\in(-\\pi,\\pi)\\) \\(S(x)=f(x)\\). При \\(x=0\\):
+                $$ \\pi = \\frac{3\\pi}{4} + \\frac{2}{\\pi}\\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^2} \\;\\Longrightarrow\\; \\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^2} = \\frac{\\pi^2}{8}. $$
+                На концах отрезка \\(S(\\pm\\pi)=\\frac12\\pi\\).
+            </div>
+        </div>`,
+        
+        // --- Слайд 6: Прикладной смысл: Теорема Дирихле и эффект Гиббса ---
+        `<div>
+            <h3>📡 Прикладной смысл: Теорема Дирихле и эффект Гиббса</h3>
+            <div class="engineering">
+                <strong>🔍 Для радиотехника это важно:</strong><br>
+                <ul>
+                    <li>Если сигнал имеет разрывы (например, прямоугольные импульсы), ряд Фурье сходится к среднему арифметическому между левым и правым пределом. Это физически означает, что восстановленный сигнал будет иметь выбросы вблизи разрыва — <strong>эффект Гиббса</strong>.</li>
+                    <li>На практике при синтезе сигнала с помощью конечного числа гармоник выбросы не исчезают, но их ширина уменьшается с ростом числа гармоник.</li>
+                    <li>Это накладывает ограничения на обработку сигналов с крутыми фронтами (например, цифровые сигналы). Инженер должен учитывать, что идеально восстановить прямоугольный сигнал невозможно.</li>
+                </ul>
+                <strong>Вывод:</strong> Теорема Дирихле не просто математическая абстракция — она предсказывает реальные физические эффекты при синтезе и анализе сигналов.
+            </div>
+        </div>`,
+        
+        // --- Слайд 7: Сходимость в среднем. Равенство Парсеваля, период 2l ---
+        `<div>
+            <h3>📊 11.3. Сходимость в среднем. Равенство Парсеваля</h3>
+            <p>Для наилучшего приближения в среднем рассматривают интеграл \\(\\int_a^b (f(x)-g(x))^2 dx\\). Частичные суммы ряда Фурье \\(S_n(x)\\) дают</p>
+            $$ \\lim_{n\\to\\infty}\\int_{-\\pi}^{\\pi}(f(x)-S_n(x))^2dx = 0. $$
+            <div class="theorem">
+                <strong>Равенство Парсеваля:</strong> 
+                $$ \\frac{a_0^2}{2} + \\sum_{n=1}^{\\infty}(a_n^2+b_n^2) = \\frac{1}{\\pi}\\int_{-\\pi}^{\\pi}f^2(x)\\,dx. $$
+                Это аналог теоремы Пифагора в пространстве функций.
+            </div>
+            <p>Если \\(f\\) непрерывна и кусочно-дифференцируема, то ряд сходится равномерно.</p>
+            <h4>11.4. Функции произвольного периода \\(2l\\)</h4>
+            <p>Замена \\(x = \\frac{l}{\\pi}t\\) даёт разложение:</p>
+            $$ f(x) \\to \\frac{a_0}{2} + \\sum_{n=1}^{\\infty}\\left(a_n\\cos\\frac{\\pi n x}{l} + b_n\\sin\\frac{\\pi n x}{l}\\right) $$
+            с коэффициентами:
+            $$ a_0 = \\frac{1}{l}\\int_{-l}^{l}f(x)dx,\\quad a_n = \\frac{1}{l}\\int_{-l}^{l}f(x)\\cos\\frac{\\pi n x}{l}dx,\\quad b_n = \\frac{1}{l}\\int_{-l}^{l}f(x)\\sin\\frac{\\pi n x}{l}dx. $$
+            <p>Равенство Парсеваля: \\(\\displaystyle \\frac{a_0^2}{2}+\\sum_{n=1}^{\\infty}(a_n^2+b_n^2)=\\frac1l\\int_{-l}^{l}f^2(x)dx\\).</p>
+        </div>`,
+        
+        // --- Слайд 8: Прикладной смысл: Спектр сигнала (решение задачи) ---
+        `<div>
+            <h3>📡 Прикладной смысл: Спектр сигнала</h3>
+            <div class="engineering">
+                <strong>✅ Возвращаемся к нашей задаче с прямоугольным сигналом:</strong><br>
+                Рассмотрим меандр (прямоугольные импульсы) с амплитудой \\(A\\), периодом \\(T = 2l\\).
+                $$ f(t) = \\begin{cases} A, & 0 < t < l \\\\ -A, & -l < t < 0 \\end{cases} $$
+                Это нечётная функция → \\(a_n=0\\), а \\(b_n = \\frac{4A}{\\pi n}\\) для нечётных \\(n\\), и 0 для чётных.
+                <strong>Ряд Фурье:</strong>
+                $$ f(t) = \\frac{4A}{\\pi} \\sum_{k=0}^{\\infty} \\frac{1}{2k+1} \\sin\\left(\\frac{2\\pi(2k+1)t}{T}\\right) $$
+                <strong>Спектр:</strong> амплитуды гармоник убывают как \\(1/n\\). Первая (основная) гармоника имеет частоту \\(f_0 = 1/T\\), третья — \\(3f_0\\), пятая — \\(5f_0\\) и т.д.
+            </div>
+            <p>Таким образом, любой прямоугольный сигнал содержит только нечётные гармоники с убывающей амплитудой. Это и есть ответ на нашу задачу: зная спектр, мы можем предсказать искажения, спроектировать фильтры для выделения нужной гармоники или восстановления формы.</p>
+        </div>`,
+        
+        // --- Слайд 9: Ряд Фурье для чётных и нечётных функций ---
+        `<div>
+            <h3>🎯 11.5. Ряд Фурье для чётных и нечётных функций</h3>
+            <p><strong>Чётная функция:</strong> \\(a_n = \\frac{2}{l}\\int_0^l f(x)\\cos\\frac{\\pi n x}{l}dx,\\; b_n=0\\). Ряд только по косинусам:</p>
+            $$ f(x) \\to \\frac{a_0}{2} + \\sum_{n=1}^{\\infty}a_n\\cos\\frac{\\pi n x}{l}. $$
+            <p><strong>Нечётная функция:</strong> \\(a_n=0,\\; b_n = \\frac{2}{l}\\int_0^l f(x)\\sin\\frac{\\pi n x}{l}dx\\). Ряд только по синусам:</p>
+            $$ f(x) \\to \\sum_{n=1}^{\\infty}b_n\\sin\\frac{\\pi n x}{l}. $$
+            <p>Равенство Парсеваля для чётной: \\(\\frac{2}{l}\\int_0^l f^2 dx = \\frac{a_0^2}{2}+\\sum_{n=1}^{\\infty} a_n^2\\).<br>
+            Для нечётной: \\(\\frac{2}{l}\\int_0^l f^2 dx = \\sum_{n=1}^{\\infty} b_n^2\\).</p>
+        </div>`,
+        
+        // --- Слайд 10: 11.6. Разложение на полупериоде + Пример 2 ---
+        `<div>
+            <h3>📘 11.6. Разложение на полупериоде + Пример 2: \\(f(x)=3-x\\) на \\([0,3]\\)</h3>
+            <p>Функцию, заданную только на \\([0,l]\\), можно разложить:</p>
+            <ul>
+                <li><strong>По косинусам</strong> (чётное продолжение) → ряд только \\(\\cos\\frac{\\pi n x}{l}\\).</li>
+                <li><strong>По синусам</strong> (нечётное продолжение) → ряд только \\(\\sin\\frac{\\pi n x}{l}\\).</li>
+            </ul>
+            <p><strong>1) Разложение по косинусам.</strong> Чётное продолжение, период \\(2l=6\\).</p>
+            $$ a_0 = \\frac{2}{3}\\int_0^3(3-x)dx = 3,\\quad \\frac{a_0}{2}=\\frac32. $$
+            $$ a_n = \\frac{2}{3}\\int_0^3 (3-x)\\cos\\frac{\\pi n x}{3}dx = \\frac{6}{\\pi^2 n^2}(1-(-1)^n) = \\begin{cases} 0, & n\\text{ чётное}\\\\ \\dfrac{12}{\\pi^2(2k+1)^2}, & n=2k+1 \\end{cases} $$
+            <p>Ряд Фурье по косинусам:</p>
+            $$ f(x) = \\frac32 + \\frac{12}{\\pi^2}\\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^2}\\cos\\frac{\\pi(2k+1)x}{3}. $$
+            <p>При \\(x=0\\): \\(3 = \\frac32 + \\frac{12}{\\pi^2}\\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^2}\\) \\(\\Rightarrow\\) \\(\\displaystyle\\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^2}=\\frac{\\pi^2}{8}\\).<br>
+            Равенство Парсеваля даёт \\(\\displaystyle\\sum_{k=0}^{\\infty}\\frac{1}{(2k+1)^4}=\\frac{\\pi^4}{96}\\).</p>
+            <hr>
+            <p><strong>2) Разложение по синусам.</strong> Нечётное продолжение, \\(f(0)=0\\), период \\(6\\).</p>
+            $$ b_n = \\frac{2}{3}\\int_0^3 (3-x)\\sin\\frac{\\pi n x}{3}dx = \\frac{6}{\\pi n}. $$
+            <p>Ряд по синусам:</p>
+            $$ f(x) = \\frac{6}{\\pi}\\sum_{n=1}^{\\infty}\\frac{1}{n}\\sin\\frac{\\pi n x}{3}. $$
+            <p>Полагая \\(x=\\frac32\\): \\(\\frac{3}{2}=\\frac{6}{\\pi}\\sum_{k=0}^{\\infty}\\frac{(-1)^k}{2k+1}\\) \\(\\Rightarrow\\) \\(\\displaystyle\\frac{\\pi}{4}=\\sum_{k=0}^{\\infty}\\frac{(-1)^k}{2k+1}\\).<br>
+            Из равенства Парсеваля: \\(\\displaystyle\\frac{2}{3}\\int_0^3 (3-x)^2dx = \\sum_{n=1}^{\\infty}\\frac{36}{\\pi^2 n^2}\\) \\(\\Rightarrow\\) \\(\\displaystyle\\sum_{n=1}^{\\infty}\\frac{1}{n^2}=\\frac{\\pi^2}{6}\\).</p>
+            <div class="definition">
+                <strong>Итог:</strong> разложения в ряды Фурье позволяют находить суммы классических числовых рядов.
+            </div>
+        </div>`,
+        
+        // --- Слайд 11: Итоги для радиотехников ---
+        `<div>
+            <h3>📖 Итоги для радиотехников: от математики к практике</h3>
+            <div class="engineering">
+                <strong>🔧 Ключевые выводы:</strong>
+                <ul>
+                    <li><strong>Ряд Фурье</strong> — это математическая модель разложения сигнала на гармоники.</li>
+                    <li><strong>Спектр сигнала</strong> (амплитуды и фазы гармоник) позволяет анализировать сигнал в частотной области, что удобнее для расчёта фильтров, усилителей и антенн.</li>
+                    <li><strong>Теорема Дирихле</strong> предсказывает поведение ряда вблизи разрывов — эффект Гиббса, который необходимо учитывать при синтезе сигналов.</li>
+                    <li><strong>Равенство Парсеваля</strong> связывает энергию сигнала во временной и частотной областях — фундаментальный закон сохранения энергии при спектральном анализе.</li>
+                    <li><strong>Разложение по косинусам и синусам</strong> соответствует разложению чётной и нечётной составляющих сигнала — используется в квадратурной модуляции и обработке комплексных сигналов.</li>
+                </ul>
+                <strong>Практическое применение:</strong> спектроанализаторы, синтезаторы частот, цифровая фильтрация, сжатие данных (JPEG, MP3), системы связи (OFDM), медицинская диагностика (ЭКГ, ЭЭГ) и многие другие области радиотехники.
+            </div>
+            <p style="margin-top: 1rem; border-top: 1px dashed var(--mirrea-light); padding-top: 0.8rem;">🔔 Лекция подготовлена кафедрой ВМ-3 РТУ МИРЭА. Материал объединяет строгую математическую теорию с её прикладным значением для будущих радиотехников.</p>
+        </div>`
+    ];
+
+    let currentSlide = 0;
+    const slideContentDiv = document.getElementById('slide-content');
+    const pageIndicatorSpan = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevSlideBtn');
+    const nextBtn = document.getElementById('nextSlideBtn');
+
+    function renderSlide() {
+        if (!slideContentDiv) return;
+        slideContentDiv.innerHTML = slides[currentSlide];
+        // Инициализация интерактивного слайда, если он сейчас активен (индекс 2)
+        if (currentSlide === 2) {
+            setTimeout(() => {
+                initInteractive();
+            }, 50);
+        }
+        if (window.renderMathInElement) {
+            window.renderMathInElement(slideContentDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ]
+            });
+        }
+        pageIndicatorSpan.innerText = `Слайд ${currentSlide+1} / ${slides.length}`;
+    }
+
+    function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; renderSlide(); } }
+    function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(); } }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { prevSlide(); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { nextSlide(); e.preventDefault(); }
+    });
+    renderSlide();
+</script>
+</body>
+</html>
