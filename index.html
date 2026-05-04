@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Лекция: Правило Лопиталя и формула Тейлора | РТУ МИРЭА</title>
+    <!-- KaTeX CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}] });"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, sans-serif; background: #f5f7fb; color: #1e2a3a; line-height: 1.5; }
+        :root { --mirrea-primary: #355CA8; --mirrea-accent1: #5FC1CF; --mirrea-accent2: #A7D916; --mirrea-light: #E6E6E6; --mirrea-white: #ffffff; --mirrea-gray: #6c757d; }
+        .header { background: var(--mirrea-white); border-bottom: 3px solid var(--mirrea-primary); padding: 0.75rem 2rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+        .logo-area { display: flex; align-items: center; gap: 0.8rem; }
+        .logo-img { width: 70px; height: 55px; object-fit: contain; background: white; border-radius: 8px; }
+        .dept-info h2 { font-size: 1.1rem; color: var(--mirrea-primary); font-weight: 600; }
+        .dept-info p { font-size: 0.8rem; color: var(--mirrea-gray); }
+        .lec-title { margin-left: auto; font-size: 0.9rem; font-weight: 500; background: var(--mirrea-light); padding: 0.4rem 1rem; border-radius: 40px; color: var(--mirrea-primary); }
+        .slider-container { max-width: 1300px; margin: 1.8rem auto; padding: 0 1.5rem; }
+        .slide-card { background: var(--mirrea-white); border-radius: 28px; box-shadow: 0 12px 28px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
+        .slide-content { padding: 2rem 2.2rem; min-height: 60vh; max-height: 70vh; overflow-y: auto; }
+        .slide-content::-webkit-scrollbar { width: 6px; }
+        .slide-content::-webkit-scrollbar-track { background: var(--mirrea-light); border-radius: 10px; }
+        .slide-content::-webkit-scrollbar-thumb { background: var(--mirrea-accent1); border-radius: 10px; }
+        .katex { font-size: 1.05em; }
+        .katex-display { margin: 1.2rem 0; overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+        .theorem { background: #eef3fc; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-accent1); }
+        .definition { background: #f0f9f0; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-accent2); }
+        .example { background: #fff7e8; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; }
+        .engineering { background: #e8f0fe; border-radius: 20px; padding: 1rem 1.4rem; margin: 1.2rem 0; border-left: 6px solid var(--mirrea-primary); }
+        .engineering strong { color: var(--mirrea-primary); }
+        h3 { color: var(--mirrea-primary); margin: 1.2rem 0 0.6rem 0; font-size: 1.4rem; }
+        h4 { color: #2c5282; margin: 0.8rem 0 0.4rem; }
+        p { margin-bottom: 0.7rem; }
+        ul, ol { margin-left: 1.4rem; margin-bottom: 0.8rem; }
+        hr { margin: 1rem 0; border: 0; height: 1px; background: linear-gradient(90deg, var(--mirrea-light), transparent); }
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem 1.8rem; background: var(--mirrea-white); border-top: 1px solid rgba(0,0,0,0.05); flex-wrap: wrap; gap: 0.8rem; }
+        .nav-btn { background: var(--mirrea-primary); color: white; border: none; padding: 0.6rem 1.4rem; font-size: 1rem; border-radius: 60px; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .nav-btn:hover { background: #2c4a8c; transform: translateY(-1px); }
+        .page-indicator { font-size: 0.9rem; background: var(--mirrea-light); padding: 0.4rem 1rem; border-radius: 40px; font-weight: 500; color: var(--mirrea-primary); }
+        @media (max-width: 700px) { .slide-content { padding: 1.2rem; } .header { padding: 0.8rem 1rem; } .lec-title { font-size: 0.7rem; } .nav-btn { padding: 0.5rem 1rem; font-size: 0.85rem; } }
+        footer { text-align: center; font-size: 0.7rem; color: #aaa; padding: 1rem; }
+        
+        /* Стили для интерактивного слайда (ряд Тейлора) */
+        .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin: 0.5rem 0 1rem; }
+        select, input { padding: 0.5rem 1rem; border-radius: 40px; border: 1px solid #cad2df; background: white; font-weight: 500; }
+        button { background: var(--mirrea-accent1); border: none; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: bold; cursor: pointer; transition: 0.15s; color: #1e2a3a; }
+        button:hover { background: #48abb9; transform: scale(0.97); }
+        canvas { display: block; width: 100%; background: #ffffff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin: 0.8rem 0; }
+        .func-canvas { height: 280px; width: 100%; }
+        .info-note { background: #eef3fc; border-radius: 18px; padding: 0.8rem 1.2rem; font-size: 0.85rem; margin-top: 1rem; }
+        .error-label { font-family: monospace; background: #f8f9fa; padding: 0.3rem 0.8rem; border-radius: 30px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-area">
+        <img src="logo.jpg" alt="РТУ МИРЭА логотип" class="logo-img" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'70\' height=\'55\' viewBox=\'0 0 70 55\'%3E%3Crect width=\'70\' height=\'55\' fill=\'%23355CA8\'/%3E%3Ctext x=\'6\' y=\'32\' fill=\'white\' font-size=\'11\' font-weight=\'bold\'%3EМИРЭА%3C/text%3E%3C/svg%3E';">
+        <div class="dept-info">
+            <h2>РТУ МИРЭА</h2>
+            <p>Кафедра "Высшая математика-3" (ВМ-3)</p>
+        </div>
+    </div>
+    <div class="lec-title">📐 Математический анализ • Лекция: Правило Лопиталя и формула Тейлора</div>
+</div>
+
+<div class="slider-container">
+    <div class="slide-card">
+        <div class="slide-content" id="slide-content"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevSlideBtn">◀ Назад</button>
+            <span class="page-indicator" id="pageIndicator">Слайд 1 / 11</span>
+            <button class="nav-btn" id="nextSlideBtn">Вперёд ▶</button>
+        </div>
+    </div>
+</div>
+<footer>© Кафедра ВМ-3, РТУ МИРЭА · Вычисление пределов: метод Лопиталя и локальный ряд Тейлора</footer>
+
+<script>
+    // ========== ИНТЕРАКТИВ: Ряд Тейлора (приближение функции) ==========
+    let interactiveInitialized = false;
+    let currentFunc = 'exp';
+    let currentOrder = 3;
+    let taylorCanvas = null, ctx = null;
+    
+    // Таблица функций и их производных в точке 0 (для построения многочлена Тейлора)
+    const funcLibrary = {
+        exp: {
+            name: 'e^x',
+            f: (x) => Math.exp(x),
+            taylorCoeffs: (n) => { // возвращает массив коэффициентов [a0, a1, a2, ..., an] для ряда e^x = sum x^k/k!
+                let coeffs = [1];
+                for(let k=1; k<=n; k++) coeffs.push(1 / factorial(k));
+                return coeffs;
+            },
+            taylorPoly: (x, order) => {
+                let sum = 0;
+                for(let k=0; k<=order; k++) sum += Math.pow(x, k) / factorial(k);
+                return sum;
+            }
+        },
+        sin: {
+            name: 'sin x',
+            f: (x) => Math.sin(x),
+            taylorPoly: (x, order) => {
+                let sum = 0;
+                for(let k=0; k<=order; k++) {
+                    if(k % 2 === 1) {
+                        let sign = (k % 4 === 1) ? 1 : -1;
+                        sum += sign * Math.pow(x, k) / factorial(k);
+                    }
+                }
+                return sum;
+            }
+        },
+        cos: {
+            name: 'cos x',
+            f: (x) => Math.cos(x),
+            taylorPoly: (x, order) => {
+                let sum = 0;
+                for(let k=0; k<=order; k++) {
+                    if(k % 2 === 0) {
+                        let sign = (k % 4 === 0) ? 1 : -1;
+                        sum += sign * Math.pow(x, k) / factorial(k);
+                    }
+                }
+                return sum;
+            }
+        },
+        ln1p: {
+            name: 'ln(1+x)',
+            f: (x) => (x > -1) ? Math.log(1+x) : NaN,
+            taylorPoly: (x, order) => {
+                let sum = 0;
+                for(let k=1; k<=order; k++) {
+                    sum += ( (k%2===1) ? 1 : -1 ) * Math.pow(x, k) / k;
+                }
+                return sum;
+            }
+        },
+        arctan: {
+            name: 'arctan x',
+            f: (x) => Math.atan(x),
+            taylorPoly: (x, order) => {
+                let sum = 0;
+                for(let k=0; k<=order; k++) {
+                    let n = 2*k+1;
+                    if(n <= order) {
+                        let sign = (k%2===0) ? 1 : -1;
+                        sum += sign * Math.pow(x, n) / n;
+                    }
+                }
+                return sum;
+            }
+        }
+    };
+    
+    function factorial(n) {
+        if(n===0 || n===1) return 1;
+        let res = 1;
+        for(let i=2; i<=n; i++) res *= i;
+        return res;
+    }
+    
+    function initInteractiveTaylor() {
+        taylorCanvas = document.getElementById('taylorCanvas');
+        if(!taylorCanvas) return;
+        ctx = taylorCanvas.getContext('2d');
+        
+        const funcSelect = document.getElementById('funcSelect');
+        const orderSlider = document.getElementById('orderSlider');
+        const orderValue = document.getElementById('orderValue');
+        
+        if(funcSelect) funcSelect.addEventListener('change', (e) => { currentFunc = e.target.value; drawTaylorPlot(); });
+        if(orderSlider) {
+            orderSlider.addEventListener('input', (e) => { 
+                currentOrder = parseInt(e.target.value);
+                if(orderValue) orderValue.innerText = currentOrder;
+                drawTaylorPlot();
+            });
+        }
+        
+        function resizeCanvas() {
+            if(!taylorCanvas) return;
+            const container = taylorCanvas.parentElement;
+            const w = Math.min(900, container.clientWidth - 40);
+            taylorCanvas.width = w;
+            taylorCanvas.height = 280;
+            drawTaylorPlot();
+        }
+        
+        function drawTaylorPlot() {
+            if(!ctx || !taylorCanvas) return;
+            const w = taylorCanvas.width;
+            const h = taylorCanvas.height;
+            ctx.clearRect(0, 0, w, h);
+            
+            // Рисуем оси
+            ctx.save();
+            ctx.strokeStyle = '#aaa';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, h/2);
+            ctx.lineTo(w, h/2);
+            ctx.moveTo(w/2, 0);
+            ctx.lineTo(w/2, h);
+            ctx.stroke();
+            
+            // Масштаб: x от -2.5 до 2.5, y от -2.5 до 2.5 (для большинства функций, но для exp ограничим y)
+            const xMin = -2.2, xMax = 2.2;
+            let yMin = -2.2, yMax = 2.2;
+            if(currentFunc === 'exp') { yMin = -0.5; yMax = 8; }
+            if(currentFunc === 'ln1p') { xMin = -0.95; xMax = 2.2; yMin = -2.5; yMax = 2.0; }
+            
+            const pxToX = (px) => xMin + (px / w) * (xMax - xMin);
+            const xToPx = (x) => ((x - xMin) / (xMax - xMin)) * w;
+            const yToPx = (y) => h - ((y - yMin) / (yMax - yMin)) * h;
+            
+            // Сетка
+            ctx.beginPath();
+            ctx.strokeStyle = '#e0e4e8';
+            ctx.lineWidth = 0.6;
+            for(let x = -2; x <= 2; x+=0.5) {
+                let px = xToPx(x);
+                ctx.moveTo(px, 0);
+                ctx.lineTo(px, h);
+            }
+            for(let y = -2; y <= 2; y+=0.5) {
+                let py = yToPx(y);
+                ctx.moveTo(0, py);
+                ctx.lineTo(w, py);
+            }
+            ctx.stroke();
+            
+            // Исходная функция (чёрный пунктир)
+            ctx.beginPath();
+            ctx.setLineDash([6, 5]);
+            ctx.strokeStyle = '#2c3e66';
+            ctx.lineWidth = 2;
+            let first = true;
+            for(let px = 0; px <= w; px++) {
+                let x = pxToX(px);
+                let y = funcLibrary[currentFunc].f(x);
+                if(isNaN(y)) { first = true; continue; }
+                let py = yToPx(y);
+                if(py < -100 || py > h+100) { first = true; continue; }
+                if(first) { ctx.moveTo(px, py); first=false; }
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            
+            // Многочлен Тейлора (цветной)
+            ctx.beginPath();
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#355CA8';
+            ctx.lineWidth = 2.8;
+            first = true;
+            for(let px = 0; px <= w; px++) {
+                let x = pxToX(px);
+                let yTaylor = funcLibrary[currentFunc].taylorPoly(x, currentOrder);
+                if(isNaN(yTaylor)) { first = true; continue; }
+                let py = yToPx(yTaylor);
+                if(py < -100 || py > h+100) { first = true; continue; }
+                if(first) { ctx.moveTo(px, py); first=false; }
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            
+            // Подпись легенды
+            ctx.font = "bold 11px 'Segoe UI'";
+            ctx.fillStyle = '#2c3e66';
+            ctx.fillText("f(x) — исходная", 20, 30);
+            ctx.fillStyle = '#355CA8';
+            ctx.fillText(`Tₙ(x), n=${currentOrder}`, 20, 48);
+            ctx.fillStyle = '#555';
+            ctx.font = "9px monospace";
+            ctx.fillText(`x₀ = 0`, w-60, 30);
+            
+            ctx.restore();
+        }
+        
+        window.addEventListener('resize', () => resizeCanvas());
+        resizeCanvas();
+        interactiveInitialized = true;
+    }
+    
+    // ========== Слайды лекции (11 слайдов) ==========
+    const slides = [
+        // 0. Титульный
+        `<div style="display: flex; flex-direction: column; justify-content: center; min-height: 50vh; text-align: center;">
+            <h1 style="font-size: 2.4rem; color: var(--mirrea-primary); margin-bottom: 1rem;">📈 Правило Лопиталя <br> и формула Тейлора</h1>
+            <h2 style="font-size: 1.6rem; color: #2c5282; margin-bottom: 1rem;">Вычисление пределов</h2>
+            <div style="font-size: 1.2rem; color: #4a627a; margin: 1rem 0;">Формула Тейлора с остаточным членом в форме Пеано</div>
+            <div style="margin-top: 2rem; font-size: 1rem; color: var(--mirrea-gray);">РТУ МИРЭА · Кафедра высшей математики - 3 (ВМ-3)</div>
+            <div style="margin-top: 0.5rem; font-size: 0.9rem;">Математический анализ — семестр 2</div>
+        </div>`,
+        
+        // 1. Проблема неопределённостей
+        `<div>
+            <h3>🎯 Проблема: вычисление пределов с неопределённостями</h3>
+            <div class="engineering">
+                <strong>🔧 Типичные неопределённости:</strong><br>
+                $$ \\frac{0}{0},\\quad \\frac{\\infty}{\\infty},\\quad 0\\cdot\\infty,\\quad \\infty-\\infty,\\quad 1^\\infty,\\quad 0^0,\\quad \\infty^0. $$
+                Прямая подстановка не работает. Нужны методы, позволяющие раскрыть неопределённость.
+            </div>
+            <p>В этой лекции мы рассмотрим <strong>два мощных инструмента</strong>:</p>
+            <ul>
+                <li><strong>Правило Лопиталя</strong> — дифференцирование числителя и знаменателя для раскрытия \(\\frac{0}{0}\) и \(\\frac{\\infty}{\\infty}\).</li>
+                <li><strong>Формула Тейлора</strong> — замена функции на многочлен с контролируемой погрешностью (остаток Пеано).</li>
+            </ul>
+            <p>Оба метода дают не только ответ, но и понимание асимптотики функций вблизи точки.</p>
+        </div>`,
+        
+        // 2. Правило Лопиталя
+        `<div>
+            <h3>📌 Правило Лопиталя (неопределённости 0/0 и ∞/∞)</h3>
+            <div class="theorem">
+                <strong>Теорема (Лопиталь).</strong> Пусть функции \(f\) и \(g\) дифференцируемы в проколотой окрестности точки \(a\), 
+                \[
+                \lim_{x\to a}f(x)=\lim_{x\to a}g(x)=0\quad(\text{или }\infty),
+                \]
+                \(g'(x)\neq 0\) в этой окрестности, и существует \(\displaystyle\lim_{x\to a}\frac{f'(x)}{g'(x)}\). Тогда
+                \[
+                \lim_{x\to a}\frac{f(x)}{g(x)} = \lim_{x\to a}\frac{f'(x)}{g'(x)}.
+                \]
+            </div>
+            <div class="example">
+                <strong>Пример 1.</strong> \(\displaystyle \lim_{x\to0}\frac{\sin x}{x} = \lim_{x\to0}\frac{\cos x}{1}=1\).<br>
+                <strong>Пример 2.</strong> \(\displaystyle \lim_{x\to0}\frac{e^x-1-x}{x^2} \stackrel{\text{Лоп.}}{=} \lim_{x\to0}\frac{e^x-1}{2x} \stackrel{\text{Лоп.}}{=} \frac12\).<br>
+                <strong>Пример 3 (∞/∞).</strong> \(\displaystyle \lim_{x\to\infty}\frac{\ln x}{x} = \lim_{x\to\infty}\frac{1/x}{1}=0\).
+            </div>
+            <p><strong>Важно:</strong> Правило можно применять повторно. Не забывайте проверять условия!</p>
+        </div>`,
+        
+        // 3. Сведение других неопределённостей
+        `<div>
+            <h3>🔄 Сведение других неопределённостей к 0/0 или ∞/∞</h3>
+            <ul>
+                <li><strong>\(0\cdot\infty\)</strong> → представить как \(\frac{0}{1/\infty}\) или \(\frac{\infty}{1/0}\).</li>
+                <li><strong>\(\infty-\infty\)</strong> → привести к общему знаменателю или замена \(t=1/x\).</li>
+                <li><strong>\(1^\infty,\;0^0,\;\infty^0\)</strong> → прологарифмировать: \(\lim f^{g} = \exp\bigl(\lim g\ln f\bigr)\).</li>
+            </ul>
+            <div class="example">
+                <strong>Пример.</strong> \(\displaystyle \lim_{x\to0} x^x = \exp\left(\lim_{x\to0} x\ln x\right)\).<br>
+                \(\displaystyle \lim_{x\to0}x\ln x = \lim_{x\to0}\frac{\ln x}{1/x} \stackrel{\text{Лоп.}}{=} \lim_{x\to0}\frac{1/x}{-1/x^2}=0\) → предел \(=e^0=1\).
+            </div>
+        </div>`,
+        
+        // 4. Формула Тейлора (остаток Пеано)
+        `<div>
+            <h3>📐 Формула Тейлора с остатком в форме Пеано</h3>
+            <div class="definition">
+                Пусть функция \(f\) имеет производные до порядка \(n\) включительно в точке \(x_0\). Тогда
+                \[
+                f(x) = P_n(x) + o\bigl((x-x_0)^n\bigr),\quad x\to x_0,
+                \]
+                где \(P_n(x)\) — многочлен Тейлора:
+                \[
+                P_n(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\dots+\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n.
+                \]
+                Символ \(o((x-x_0)^n)\) означает бесконечно малую более высокого порядка, чем \((x-x_0)^n\).
+            </div>
+            <p>Это локальная формула: она даёт приближение функции многочленом с точностью до пренебрежимо малых членов. Идеально для вычисления пределов!</p>
+        </div>`,
+        
+        // 5. Таблица разложений (Маклорен, x₀=0)
+        `<div>
+            <h3>📖 Таблица основных разложений в ряд Маклорена</h3>
+            <div class="theorem">
+                \[
+                \begin{aligned}
+                e^x &= 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots + \frac{x^n}{n!} + o(x^n),\\
+                \sin x &= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots + (-1)^k\frac{x^{2k+1}}{(2k+1)!} + o(x^{2k+2}),\\
+                \cos x &= 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \dots + (-1)^k\frac{x^{2k}}{(2k)!} + o(x^{2k+1}),\\
+                \ln(1+x) &= x - \frac{x^2}{2} + \frac{x^3}{3} - \dots + (-1)^{n-1}\frac{x^n}{n} + o(x^n),\\
+                (1+x)^\alpha &= 1 + \alpha x + \frac{\alpha(\alpha-1)}{2!}x^2 + \dots + \binom{\alpha}{n}x^n + o(x^n).
+                \end{aligned}
+                \]
+            </div>
+            <p>Эти формулы – ключ к быстрому нахождению пределов без многократного дифференцирования.</p>
+        </div>`,
+        
+        // 6. ИНТЕРАКТИВНЫЙ СЛАЙД: приближение функции многочленом Тейлора
+        `<div>
+            <h3>🎮 Интерактив: приближение функции рядом Тейлора</h3>
+            <div class="controls">
+                <label>Функция \(f(x)\):</label>
+                <select id="funcSelect">
+                    <option value="exp">\(e^x\)</option>
+                    <option value="sin">\(\sin x\)</option>
+                    <option value="cos">\(\cos x\)</option>
+                    <option value="ln1p">\(\ln(1+x)\)</option>
+                    <option value="arctan">\(\arctan x\)</option>
+                </select>
+                <label>Степень \(n\):</label>
+                <input type="range" id="orderSlider" min="1" max="7" step="1" value="3">
+                <span id="orderValue">3</span>
+            </div>
+            <canvas id="taylorCanvas" class="func-canvas" width="900" height="280" style="width:100%; height:auto; background:#fff; border-radius:20px;"></canvas>
+            <div class="info-note">
+                📌 Чёрный пунктир — точная функция \(f(x)\). Синяя линия — многочлен Тейлора степени \(n\) в точке \(x_0=0\). 
+                Чем выше степень, тем больше интервал, на котором приближение остаётся точным. Для аналитических функций погрешность стремится к нулю.
+            </div>
+            <p><strong>Вывод:</strong> ряд Тейлора позволяет локально заменять сложную функцию на многочлен — это основа метода вычисления пределов через разложения.</p>
+        </div>`,
+        
+        // 7. Вычисление пределов с помощью Тейлора
+        `<div>
+            <h3>📊 Схема вычисления пределов через формулу Тейлора</h3>
+            <div class="engineering">
+                <strong>Алгоритм:</strong>
+                <ol>
+                    <li>Разложить каждую функцию в числителе и знаменателе в ряд Тейлора с остатком Пеано до нужного порядка (чтобы главные члены не сократились).</li>
+                    <li>Привести подобные, отбросить члены \(o(x^k)\).</li>
+                    <li>Вычислить предел отношения многочленов (или разности).</li>
+                </ol>
+            </div>
+            <div class="example">
+                <strong>Пример.</strong> \(\displaystyle \lim_{x\to0}\frac{\cos x - e^{-x^2/2}}{x^4}\).<br>
+                Разложение: \(\cos x = 1 - \frac{x^2}{2} + \frac{x^4}{24} + o(x^4)\), \(e^{-x^2/2}=1 - \frac{x^2}{2} + \frac{x^4}{8} + o(x^4)\).<br>
+                Числитель: \(\left(1 - \frac{x^2}{2} + \frac{x^4}{24}\right) - \left(1 - \frac{x^2}{2} + \frac{x^4}{8}\right) + o(x^4) = -\frac{x^4}{12}+o(x^4)\).<br>
+                Предел: \(\displaystyle \frac{-\frac{x^4}{12}+o(x^4)}{x^4} = -\frac{1}{12}\).
+            </div>
+        </div>`,
+        
+        // 8. Сравнение Лопиталь vs Тейлор
+        `<div>
+            <h3>⚖️ Сравнение методов: Лопиталь или Тейлор?</h3>
+            <ul>
+                <li><strong>Правило Лопиталя</strong> — быстро для простых неопределённостей, но при многократном дифференцировании легко ошибиться.</li>
+                <li><strong>Формула Тейлора</strong> — универсальна, даёт асимптотику, не требует повторного дифф-я (достаточно готовых разложений).</li>
+            </ul>
+            <div class="theorem">
+                <strong>Пример сравнения:</strong> \(\displaystyle \lim_{x\to0}\frac{\sin x - x}{x^3}\).<br>
+                <strong>Лопиталь:</strong> трижды применить правило → \(\lim\frac{-\cos x}{6} = -\frac16\).<br>
+                <strong>Тейлор:</strong> \(\sin x = x - \frac{x^3}{6}+o(x^3)\) → числитель \(-\frac{x^3}{6}+o(x^3)\) → предел \(-\frac16\).<br>
+                Оба метода дают одинаковый ответ, но Тейлор даёт больше информации (следующий член ряда).
+            </div>
+            <p>Рекомендация: владеть обоими методами. Тейлор — мощнее для сложных пределов с участием элементарных функций.</p>
+        </div>`,
+        
+        // 9. Примеры для самостоятельной работы
+        `<div>
+            <h3>✍️ Примеры для самостоятельной работы</h3>
+            <div class="example">
+                Вычислите пределы, используя любой метод (рекомендуется оба):
+                <ol>
+                    <li>\(\displaystyle \lim_{x\to0}\frac{\ln(1+x)-x}{x^2}\)</li>
+                    <li>\(\displaystyle \lim_{x\to0}\frac{\sqrt{1+x}-1-\frac{x}{2}}{x^2}\)</li>
+                    <li>\(\displaystyle \lim_{x\to0}\left(\frac{1}{x^2} - \cot^2 x\right)\)</li>
+                    <li>\(\displaystyle \lim_{x\to0}\bigl(e^x + x\bigr)^{1/x}\)</li>
+                </ol>
+                <details>
+                    <summary>Ответы (нажмите)</summary>
+                    1) \(-\frac12\) 2) \(-\frac18\) 3) \(\frac23\) 4) \(e^2\)
+                </details>
+            </div>
+            <p>Совет: для последнего примера удобно прологарифмировать и использовать разложение \(\ln(1+u)=u-\frac{u^2}{2}+o(u^2)\).</p>
+        </div>`,
+        
+        // 10. Итоги и рекомендации
+        `<div>
+            <h3>📌 Итоги: от математики к практике</h3>
+            <div class="engineering">
+                <strong>🔧 Ключевые выводы:</strong>
+                <ul>
+                    <li><strong>Правило Лопиталя</strong> — классический инструмент для неопределённостей, удобен на экзаменах и быстрых расчётах.</li>
+                    <li><strong>Формула Тейлора</strong> (с остатком Пеано) — более универсальный метод, позволяющий не только найти предел, но и получить асимптотическое разложение функции.</li>
+                    <li>Знание табличных разложений помогает решать пределы в одну-две строчки.</li>
+                    <li>Оба метода активно используются в физике, механике и радиотехнике: например, при линеаризации нелинейных систем, анализе малых колебаний, оценке погрешностей.</li>
+                </ul>
+                <strong>Рекомендация:</strong> на практических занятиях осваивайте оба подхода – это значительно расширит ваш арсенал.
+            </div>
+            <p style="margin-top: 1rem; border-top: 1px dashed var(--mirrea-light); padding-top: 0.8rem;">🔔 Лекция подготовлена кафедрой ВМ-3 РТУ МИРЭА. Успешного вычисления пределов!</p>
+        </div>`
+    ];
+    
+    let currentSlide = 0;
+    const slideContentDiv = document.getElementById('slide-content');
+    const pageIndicatorSpan = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevSlideBtn');
+    const nextBtn = document.getElementById('nextSlideBtn');
+    
+    function renderSlide() {
+        if (!slideContentDiv) return;
+        slideContentDiv.innerHTML = slides[currentSlide];
+        // Если это интерактивный слайд (индекс 6), инициализируем график
+        if (currentSlide === 6) {
+            setTimeout(() => {
+                initInteractiveTaylor();
+            }, 60);
+        }
+        if (window.renderMathInElement) {
+            window.renderMathInElement(slideContentDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ]
+            });
+        }
+        pageIndicatorSpan.innerText = `Слайд ${currentSlide+1} / ${slides.length}`;
+    }
+    
+    function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; renderSlide(); } }
+    function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(); } }
+    
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { prevSlide(); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { nextSlide(); e.preventDefault(); }
+    });
+    renderSlide();
+</script>
+</body>
+</html>
