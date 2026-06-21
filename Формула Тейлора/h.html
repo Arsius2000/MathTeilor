@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Лекция: Сравнение методов вычисления пределов функций | РТУ МИРЭА</title>
+    <title>Сравнение методов вычисления пределов функций | РТУ МИРЭА</title>
     <script>
         window.MathJax = {
             tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$'],['\\[', '\\]']]  },
@@ -51,6 +51,11 @@
         .info-note { background: #eef3fc; border-radius: 18px; padding: 0.8rem 1.2rem; font-size: 0.85rem; margin-top: 1rem; }
         .slide { display: none; }
         .slide.active { display: block; }
+        @media print {
+            .nav-buttons, .controls, .info-note, footer .nav-btn, .page-indicator { display: none; }
+            .slide { display: block !important; page-break-after: always; }
+            .slide-content { max-height: none; overflow: visible; }
+        }
     </style>
 </head>
 <body>
@@ -63,7 +68,7 @@
             <p>Кафедра "Высшая математика-3" (ВМ-3)</p>
         </div>
     </div>
-    <div class="lec-title">📐 Математический анализ • Лекция: Сравнение методов вычисления пределов функций</div>
+    <div class="lec-title">📐 Математический анализ • Сравнение методов вычисления пределов</div>
 </div>
 
 <div class="slider-container">
@@ -72,10 +77,10 @@
             <!-- Слайд 1 (Титульный) -->
             <div class="slide active" id="slide0">
                 <div style="text-align:center; min-height:50vh; display:flex; flex-direction:column; justify-content:center;">
-                    <h1 style="font-size:2.4rem; color:#355CA8;">📈 Правило Лопиталя <br> и формула Тейлора</h1>
-                    <h2 style="font-size:1.6rem; color:#2c5282;">Вычисление пределов функций</h2>
+                    <h1 style="font-size:2.4rem; color:#355CA8;">📈 Сравнение методов <br> вычисления пределов функций</h1>
+                    <h2 style="font-size:1.6rem; color:#2c5282;">Правило Лопиталя и формула Тейлора</h2>
                     <p style="margin-top:1rem;">РТУ МИРЭА · Кафедра ВМ-3</p>
-                    <p style="margin-top:0.5rem; font-size:0.9rem;">Лекция 11 | Семестр 2</p>
+                    <p style="margin-top:0.5rem; font-size:0.9rem;">Лекция  | Семестр 2</p>
                 </div>
             </div>
             
@@ -86,8 +91,8 @@
                 <div class="engineering">
                     $$ \frac{0}{0},\quad \frac{\infty}{\infty},\quad 0\cdot\infty,\quad \infty-\infty,\quad 1^\infty,\quad 0^0,\quad \infty^0 $$
                 </div>
-                <p>Для раскрытия этих неопределённостей применяют различные методы: алгебраические преобразования, эквивалентные бесконечно малые, замечательные пределы. Однако самым мощным и универсальным инструментом являются <strong>правило Лопиталя</strong> и <strong>формула Тейлора</strong>.</p>
-                <div class="note">В этой лекции мы детально разберём оба метода, сравним их эффективность и научимся применять в сложных ситуациях.</div>
+                <p>Для раскрытия этих неопределённостей применяют различные методы. Два наиболее мощных подхода – <strong>правило Лопиталя</strong> и <strong>формула Тейлора</strong>.</p>
+                <div class="note">В этой лекции мы детально сравним эти методы, выявим их сильные и слабые стороны и научимся выбирать оптимальный инструмент.</div>
             </div>
             
             <!-- Слайд 3: Правило Лопиталя -->
@@ -170,7 +175,7 @@
                 <p>Эти формулы следует запомнить – они являются базой для вычисления большинства пределов методом Тейлора. Остаточный член \(o(x^n)\) означает, что погрешность стремится к нулю быстрее, чем \(x^n\).</p>
             </div>
             
-            <!-- Слайд 8: Интерактивный (график с метками осей) -->
+            <!-- Слайд 8: Интерактивный график -->
             <div class="slide" id="slide7">
                 <h3>🎮 Интерактив: приближение функции рядом Тейлора</h3>
                 <div class="controls">
@@ -220,16 +225,34 @@
             
             <!-- Слайд 10: Сравнение методов -->
             <div class="slide" id="slide9">
-                <h3>⚖️ Сравнение методов: Лопиталя и Тейлора</h3>
+                <h3>⚖️ Сравнение методов: Лопиталя, Тейлора и классических приёмов</h3>
+                <p>Помимо правила Лопиталя и разложений Тейлора, существуют более простые, но эффективные методы:</p>
+                <ul>
+                    <li><strong>Алгебраические преобразования</strong> – разложение на множители, сокращение общих множителей.</li>
+                    <li><strong>Замена переменной</strong> – сведение к известному пределу.</li>
+                    <li><strong>Эквивалентные бесконечно малые</strong> – при \(x\to0\): \(\sin x \sim x\), \(e^x-1 \sim x\), \(\ln(1+x)\sim x\) и т.д.</li>
+                    <li><strong>Первый и второй замечательные пределы</strong>.</li>
+                </ul>
+                <div class="example">
+                    <strong>Пример сравнения:</strong> \(\lim_{x\to0}\frac{\sin 2x}{x}\).<br>
+                    • <strong>Алгебра/замена:</strong> \(\frac{\sin 2x}{x} = 2\cdot\frac{\sin 2x}{2x} \to 2\cdot1 = 2\).<br>
+                    • <strong>Лопиталь:</strong> \(\frac{2\cos 2x}{1} \to 2\).<br>
+                    • <strong>Тейлор:</strong> \(\sin 2x = 2x - \frac{(2x)^3}{6}+o(x^3)\) → предел \(2\).<br>
+                    Все методы дают одинаковый результат, но алгебраический – самый быстрый.
+                </div>
                 <table>
-                    <tr><th>Критерий</th><th>Правило Лопиталя</th><th>Формула Тейлора</th></tr>
-                    <tr><td>Тип неопределённости</td><td>\(0/0\), \(\infty/\infty\)</td><td>Любые (после приведения)</td></tr>
-                    <tr><td>Сложность вычислений</td><td>Растёт с числом дифференцирований</td><td>Фиксирована выбором порядка \(n\)</td></tr>
-                    <tr><td>Надёжность</td><td>Требует проверки условий</td><td>Алгоритмичен, меньше ошибок</td></tr>
-                    <tr><td>Дополнительная информация</td><td>Только предел</td><td>Даёт асимптотику \(f(x)\sim P_n(x)\)</td></tr>
+                    <tr><th>Метод</th><th>Когда удобен</th><th>Ограничения</th></tr>
+                    <tr><td>Алгебраические преобразования</td><td>Простые рациональные и тригонометрические выражения</td><td>Не всегда приводят к раскрытию неопределённости</td></tr>
+                    <tr><td>Эквивалентные бесконечно малые</td><td>Произведения и частные бесконечно малых</td><td>Не работают для сумм/разностей</td></tr>
+                    <tr><td>Правило Лопиталя</td><td>\(0/0\), \(\infty/\infty\), быстрое вычисление</td><td>Требует дифференцируемости, может привести к усложнению</td></tr>
+                    <tr><td>Формула Тейлора</td><td>Любые неопределённости, особенно смешанные</td><td>Нужно помнить разложения, выбрать порядок \(n\)</td></tr>
                 </table>
                 <div class="theorem">
-                    <strong>Практическая рекомендация:</strong> Для простых неопределённостей ( \(\frac{\sin x}{x}\) ) используйте Лопиталя. Для сложных выражений с разными функциями – разложение Тейлора. В трудных случаях комбинируйте: сначала упростите эквивалентными заменами, затем применяйте Тейлора.
+                    <strong>Стратегия выбора:</strong><br>
+                    1. Попробуйте эквивалентные замены или алгебру (быстрее всего).<br>
+                    2. Если не получается – примените правило Лопиталя (для \(0/0\) или \(\infty/\infty\)).<br>
+                    3. Для сложных комбинаций (степени, разности, логарифмы) используйте разложение Тейлора.<br>
+                    4. Если предел содержит параметры, часто удобнее Лопиталь или разложение до нужного порядка.
                 </div>
             </div>
             
@@ -301,7 +324,7 @@
                 <ul>
                     <li><strong>Правило Лопиталя</strong> – эффективный метод раскрытия неопределённостей \(0/0\) и \(\infty/\infty\) с помощью производных. Применим многократно, но требует проверки условий.</li>
                     <li><strong>Формула Тейлора</strong> (остаток Пеано) – универсальный локальный метод, позволяющий заменять функцию многочленом. Даёт асимптотику и удобен для сложных пределов.</li>
-                    <li><strong>Сравнение:</strong> Лопиталь быстрее для стандартных пределов, Тейлор – для комбинированных и при поиске порядка малости.</li>
+                    <li><strong>Сравнение:</strong> Для простых пределов лучше использовать эквивалентности или алгебру; Лопиталь и Тейлор – для сложных случаев.</li>
                     <li><strong>Рекомендуется</strong> освоить оба подхода и уметь применять их гибко.</li>
                 </ul>
             </div>
@@ -313,7 +336,7 @@
         </div>
     </div>
 </div>
-<footer>© Кафедра ВМ-3, РТУ МИРЭА · Лекция: Правило Лопиталя и формула Тейлора</footer>
+<footer>© Кафедра ВМ-3, РТУ МИРЭА · Сравнение методов вычисления пределов функций</footer>
 
 <script>
     const slides = document.querySelectorAll('.slide');
@@ -343,7 +366,6 @@
     });
     updateSlides();
 
-    // ========== ИНТЕРАКТИВНЫЙ ГРАФИК С ПОДПИСЯМИ ОСЕЙ ==========
     let taylorCanvas = null, ctx = null;
     let currentFunc = 'exp';
     let currentOrder = 3;
@@ -363,7 +385,6 @@
         if(w===0 || h===0) return;
         ctx.clearRect(0,0,w,h);
         
-        // Определяем границы
         const xMin = -2.2, xMax = 2.2;
         let yMin = -2.2, yMax = 2.2;
         if(currentFunc==='exp') { yMin=-0.5; yMax=7.5; }
@@ -373,20 +394,17 @@
         const yToPx = y => h - ((y-yMin)/(yMax-yMin))*h;
         
         ctx.save();
-        // ----- Оси и сетка -----
         ctx.strokeStyle='#aaa'; ctx.lineWidth=1;
         ctx.beginPath();
-        ctx.moveTo(0, yToPx(0)); ctx.lineTo(w, yToPx(0)); // ось X
-        ctx.moveTo(xToPx(0), 0); ctx.lineTo(xToPx(0), h); // ось Y
+        ctx.moveTo(0, yToPx(0)); ctx.lineTo(w, yToPx(0));
+        ctx.moveTo(xToPx(0), 0); ctx.lineTo(xToPx(0), h);
         ctx.stroke();
         
-        // Сетка
         ctx.beginPath(); ctx.strokeStyle='#e0e4e8'; ctx.lineWidth=0.6;
         for(let x=-2; x<=2; x+=0.5) { let px=xToPx(x); ctx.moveTo(px,0); ctx.lineTo(px,h); }
         for(let y=-2; y<=2; y+=0.5) { let py=yToPx(y); ctx.moveTo(0,py); ctx.lineTo(w,py); }
         ctx.stroke();
         
-        // ----- Подписи делений по оси X (шаг 1) -----
         ctx.font = "11px 'Segoe UI'";
         ctx.fillStyle = '#333';
         ctx.textAlign = 'center';
@@ -394,11 +412,9 @@
         for(let x = -2; x <= 2; x += 1) {
             let px = xToPx(x);
             ctx.fillText(x.toString(), px, yToPx(0) + 5);
-            // маленькая засечка
             ctx.beginPath(); ctx.moveTo(px, yToPx(0)-3); ctx.lineTo(px, yToPx(0)+3); ctx.stroke();
         }
         
-        // ----- Подписи делений по оси Y (автоматический шаг) -----
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
         let yStep = 1;
@@ -414,15 +430,12 @@
             }
         }
         
-        // Подписи осей "x" и "y"
         ctx.font = "italic 13px 'Segoe UI'";
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
         ctx.fillText("x", w-8, yToPx(0)-8);
         ctx.fillText("y", xToPx(0)+8, 15);
         
-        // ----- Графики функций -----
-        // Точная функция (пунктир)
         ctx.beginPath(); ctx.setLineDash([6,5]); ctx.strokeStyle='#2c3e66'; ctx.lineWidth=2;
         let first=true;
         for(let px=0; px<=w; px++){
@@ -435,7 +448,6 @@
         }
         ctx.stroke();
         
-        // Многочлен Тейлора (сплошной)
         ctx.beginPath(); ctx.setLineDash([]); ctx.strokeStyle='#355CA8'; ctx.lineWidth=2.8;
         first=true;
         for(let px=0; px<=w; px++){
@@ -448,7 +460,6 @@
         }
         ctx.stroke();
         
-        // Легенда
         ctx.font="bold 11px 'Segoe UI'";
         ctx.fillStyle='#2c3e66'; ctx.fillText("f(x) точная",50,30);
         ctx.fillStyle='#355CA8'; ctx.fillText(`Tₙ(x), n=${currentOrder}`,50,48);
